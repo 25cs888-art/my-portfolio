@@ -7,6 +7,7 @@ const cors = require('cors');
 require('dotenv').config();
 
 const Project = require('./models/Project'); // Import our project blueprint
+const Contact = require('./models/Contact'); // Import our contact messages blueprint
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -59,6 +60,45 @@ app.post('/api/projects', async (req, res) => {
         res.status(201).json(savedProject);
     } catch (error) {
         res.status(500).json({ message: "Error adding project", error: error.message });
+    }
+});
+
+// ROUTE 4: Delete a project by ID
+app.delete('/api/projects/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const deletedProject = await Project.findByIdAndDelete(id);
+        if (!deletedProject) {
+            return res.status(404).json({ message: "Project not found" });
+        }
+        res.status(200).json({ message: "Project successfully deleted!", data: deletedProject });
+    } catch (error) {
+        res.status(500).json({ message: "Error deleting project", error: error.message });
+    }
+});
+
+// ROUTE 5: Submit a contact form message
+app.post('/api/contacts', async (req, res) => {
+    try {
+        const { name, email, message } = req.body;
+        if (!name || !email || !message) {
+            return res.status(400).json({ message: "All fields are required" });
+        }
+        const newContact = new Contact({ name, email, message });
+        const savedContact = await newContact.save();
+        res.status(201).json(savedContact);
+    } catch (error) {
+        res.status(500).json({ message: "Error saving contact message", error: error.message });
+    }
+});
+
+// ROUTE 6: Fetch all contact messages
+app.get('/api/contacts', async (req, res) => {
+    try {
+        const contacts = await Contact.find().sort({ createdAt: -1 }); // Newest messages first
+        res.status(200).json(contacts);
+    } catch (error) {
+        res.status(500).json({ message: "Error fetching contact messages", error: error.message });
     }
 });
 
