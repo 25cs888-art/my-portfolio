@@ -14,7 +14,7 @@ function App() {
   const [liveLink, setLiveLink] = useState('');
 
   const fetchProjects = () => {
-    axios.get('http://localhost:5000/api/projects')
+    axios.get('https://my-portfolio-fj4k.onrender.com/api/projects')
       .then(response => {
         setProjects(response.data);
         setLoading(false);
@@ -41,7 +41,7 @@ function App() {
       liveLink
     };
 
-    axios.post('http://localhost:5000/api/projects', newProject)
+    axios.post('https://my-portfolio-fj4k.onrender.com/api/projects', newProject)
       .then(() => {
         fetchProjects();
         setTitle('');
